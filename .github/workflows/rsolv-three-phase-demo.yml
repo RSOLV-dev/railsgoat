@@ -37,7 +37,7 @@ jobs:
           rsolvApiKey: ${{ secrets.RSOLV_API_KEY }}
           api_url: https://rsolv-staging.com
           mode: 'scan'
-          max_issues: ${{ inputs.max_issues }}
+          max_issues: 1 # Process one issue at a time to avoid storePhaseResults error
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEBUG: ${{ inputs.debug && 'rsolv:*' || '' }}
@@ -76,7 +76,7 @@ jobs:
           api_url: https://rsolv-staging.com
           mode: 'validate'
           issue_label: 'rsolv:detected'
-          max_issues: ${{ inputs.max_issues }}
+          max_issues: 1 # Process one issue at a time to avoid storePhaseResults error
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEBUG: ${{ inputs.debug && 'rsolv:*' || '' }}
@@ -122,7 +122,7 @@ jobs:
           api_url: https://rsolv-staging.com
           mode: 'mitigate'
           issue_label: 'rsolv:validated'
-          max_issues: ${{ inputs.max_issues }}
+          max_issues: 1 # Process one issue at a time to avoid storePhaseResults error
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DEBUG: ${{ inputs.debug && 'rsolv:*' || '' }}
