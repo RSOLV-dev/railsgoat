@@ -35,6 +35,7 @@ jobs:
         uses: RSOLV-dev/rsolv-action@v3.7.62
         with:
           rsolvApiKey: ${{ secrets.RSOLV_API_KEY }}
+          api_url: https://rsolv-staging.com
           mode: 'scan'
           max_issues: ${{ inputs.max_issues }}
         env:
@@ -72,6 +73,7 @@ jobs:
         uses: RSOLV-dev/rsolv-action@v3.7.62
         with:
           rsolvApiKey: ${{ secrets.RSOLV_API_KEY }}
+          api_url: https://rsolv-staging.com
           mode: 'validate'
           issue_label: 'rsolv:detected'
           max_issues: ${{ inputs.max_issues }}
@@ -117,6 +119,7 @@ jobs:
         uses: RSOLV-dev/rsolv-action@v3.7.62
         with:
           rsolvApiKey: ${{ secrets.RSOLV_API_KEY }}
+          api_url: https://rsolv-staging.com
           mode: 'mitigate'
           issue_label: 'rsolv:validated'
           max_issues: ${{ inputs.max_issues }}
