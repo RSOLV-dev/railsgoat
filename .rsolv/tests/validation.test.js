@@ -1,27 +1,27 @@
 {
   "redTests": [
     {
-      "testName": "test_failed_login_attempt_not_logged",
-      "testCode": "require 'rails_helper'\n\nRSpec.describe SessionsController, type: :controller do\n  it 'fails when failed login is not logged' do\n    allow(Rails.logger).to receive(:warn)\n    allow(Rails.logger).to receive(:info)\n    post :create, params: { email: 'attacker@evil.com', password: 'wrong' }\n    expect(Rails.logger).to have_received(:warn).with(/failed.*login|authentication.*failed/i)\n  end\nend",
-      "attackVector": "failed login with invalid credentials",
+      "testName": "cookie_missing_secure_flag",
+      "testCode": "require 'rails_helper'\n\nRSpec.describe DashboardController, type: :controller do\n  it 'sets cookie without secure flag' do\n    get :home, params: { font: 'Arial' }\n    cookie = response.cookies['font']\n    expect(cookie).to be_present\n    expect(response.headers['Set-Cookie']).not_to include('secure')\n  end\nend",
+      "attackVector": "font=Arial",
       "expectedBehavior": "should_fail_on_vulnerable_code"
     },
     {
-      "testName": "test_successful_login_not_logged",
-      "testCode": "require 'rails_helper'\n\nRSpec.describe SessionsController, type: :controller do\n  it 'fails when successful login is not logged' do\n    user = User.create!(email: 'user@test.com', password: 'password123')\n    allow(Rails.logger).to receive(:info)\n    post :create, params: { email: user.email, password: 'password123' }\n    expect(Rails.logger).to have_received(:info).with(/successful.*login|authenticated/i)\n  end\nend",
-      "attackVector": "successful authentication event",
+      "testName": "cookie_missing_httponly_flag",
+      "testCode": "require 'rails_helper'\n\nRSpec.describe DashboardController, type: :controller do\n  it 'sets cookie without httponly flag' do\n    get :home, params: { font: 'Verdana' }\n    cookie = response.cookies['font']\n    expect(cookie).to be_present\n    expect(response.headers['Set-Cookie']).not_to include('HttpOnly')\n  end\nend",
+      "attackVector": "font=Verdana",
       "expectedBehavior": "should_fail_on_vulnerable_code"
     },
     {
-      "testName": "test_logout_not_logged",
-      "testCode": "require 'rails_helper'\n\nRSpec.describe SessionsController, type: :controller do\n  it 'fails when logout is not logged' do\n    user = User.create!(email: 'user@test.com', password: 'password123')\n    session[:user_id] = user.id\n    allow(Rails.logger).to receive(:info)\n    delete :destroy\n    expect(Rails.logger).to have_received(:info).with(/logout|session.*destroyed/i)\n  end\nend",
-      "attackVector": "session termination event",
+      "testName": "cookie_missing_samesite_flag",
+      "testCode": "require 'rails_helper'\n\nRSpec.describe DashboardController, type: :controller do\n  it 'sets cookie without samesite flag' do\n    get :home, params: { font: 'Times' }\n    cookie = response.cookies['font']\n    expect(cookie).to be_present\n    expect(response.headers['Set-Cookie']).not_to match(/SameSite=(Strict|Lax)/i)\n  end\nend",
+      "attackVector": "font=Times",
       "expectedBehavior": "should_fail_on_vulnerable_code"
     },
     {
-      "testName": "test_authentication_exception_not_logged",
-      "testCode": "require 'rails_helper'\n\nRSpec.describe SessionsController, type: :controller do\n  it 'fails when authentication exception is not logged' do\n    allow(User).to receive(:authenticate).and_raise(RuntimeError, 'Auth error')\n    allow(Rails.logger).to receive(:error)\n    post :create, params: { email: 'test@test.com', password: 'pass' }\n    expect(Rails.logger).to have_received(:error).with(/authentication.*error|exception/i)\n  end\nend",
-      "attackVector": "authentication runtime exception",
+      "testName": "cookie_vulnerable_to_xss_theft",
+      "testCode": "require 'rails_helper'\n\nRSpec.describe DashboardController, type: :controller do\n  it 'cookie accessible via JavaScript due to missing httponly' do\n    get :home, params: { font: 'Comic Sans' }\n    expect(response.cookies['font']).to eq('Comic Sans')\n    expect(response.headers['Set-Cookie']).not_to include('HttpOnly')\n  end\nend",
+      "attackVector": "font=Comic Sans",
       "expectedBehavior": "should_fail_on_vulnerable_code"
     }
   ]
