@@ -16,6 +16,7 @@
 //= require jquery.min.js
 //= require jquery.scrollUp.js
 //= require bootstrap.js
+//= require regex-security-patch.js
 //= require bootstrap-colorpicker.js
 //= require date-picker/date.js
 //= require date-picker/daterangepicker.js
