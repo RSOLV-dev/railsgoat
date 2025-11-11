@@ -431,6 +431,10 @@ var ZeroClipboard = {
 			thingy.show = function() { this.style.display = ''; };
 			thingy.addClass = function(name) { this.removeClass(name); this.className += ' ' + name; };
 			thingy.removeClass = function(name) {
+				// Prevent prototype pollution
+				if (name === '__proto__' || name === 'constructor' || name === 'prototype') {
+					return this;
+				}
 				var classes = this.className.split(/\s+/);
 				var idx = -1;
 				for (var k = 0; k < classes.length; k++) {
