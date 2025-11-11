@@ -433,7 +433,13 @@ var ZeroClipboard = {
 			// extend element with a few useful methods
 			thingy.hide = function() { this.style.display = 'none'; };
 			thingy.show = function() { this.style.display = ''; };
-			thingy.addClass = function(name) { this.removeClass(name); this.className += ' ' + name; };
+			thingy.addClass = function(name) {
+				// Prevent prototype pollution
+				if (name !== '__proto__' && name !== 'constructor' && name !== 'prototype') {
+					this.removeClass(name);
+					this.className += ' ' + name;
+				}
+			};
 			thingy.removeClass = function(name) {
 				var classes = this.className.split(/\s+/);
 				var idx = -1;
