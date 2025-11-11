@@ -28,8 +28,10 @@ class PayController < ApplicationController
   def destroy
     pay = Pay.find_by_id(params[:id])
     if pay.present? and pay.destroy
+      Rails.logger.warn("[SECURITY] User #{current_user.id} deleted payment info #{params[:id]} from IP #{request.remote_ip}")
       flash[:success] = "Successfully Deleted Entry"
     else
+      Rails.logger.warn("[SECURITY] Failed payment deletion attempt by user #{current_user.id} for pay_id #{params[:id]} from IP #{request.remote_ip}")
       flash[:error] = "Unable to process that request at this time"
     end
     redirect_to user_pay_index_path

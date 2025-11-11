@@ -15,9 +15,11 @@ class MessagesController < ApplicationController
     message = Message.where(id: params[:id]).first
 
     if message.destroy
+      Rails.logger.info("[SECURITY] User #{current_user.id} deleted message #{params[:id]} from IP #{request.remote_ip}")
       flash[:success] = "Your message has been deleted."
       redirect_to user_messages_path(user_id: current_user.id)
     else
+      Rails.logger.warn("[SECURITY] Failed message deletion attempt by user #{current_user.id} for message_id #{params[:id]} from IP #{request.remote_ip}")
       flash[:error] = "Could not delete message."
     end
   end

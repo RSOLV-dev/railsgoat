@@ -31,7 +31,8 @@ class ScheduleController < ApplicationController
           hash[:end] = s[:date_end]
           jfs << hash
        end
-    rescue
+    rescue => e
+      Rails.logger.error("[SECURITY] Error retrieving PTO schedule for user #{current_user.id}: #{e.class} - #{e.message} from IP #{request.remote_ip}")
     end
     respond_to do |format|
        format.json { render json: jfs.to_json }

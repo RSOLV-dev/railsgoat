@@ -50,8 +50,11 @@ class AdminController < ApplicationController
     if user && !(current_user.id == user.id)
       # Call destroy here so that all association records w/ id are destroyed as well
       # Example user.retirement records would be destroyed
+      Rails.logger.warn("[SECURITY] Admin #{current_user.id} (#{current_user.email}) deleted user #{user.id} (#{user.email}) from IP #{request.remote_ip}")
       user.destroy
       message = true
+    else
+      Rails.logger.warn("[SECURITY] Failed user deletion attempt by admin #{current_user.id} for user_id #{params[:admin_id]} from IP #{request.remote_ip}")
     end
     respond_to do |format|
       format.json { render json: { msg: message ? "success" : "failure"} }

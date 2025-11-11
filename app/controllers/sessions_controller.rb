@@ -14,10 +14,12 @@ class SessionsController < ApplicationController
       # Normalize the email address, why not
       user = User.authenticate(params[:email].to_s.strip.downcase, params[:password])
     rescue RuntimeError => e
+      Rails.logger.warn("[SECURITY] Authentication error for email #{params[:email]} from IP #{request.remote_ip}: #{e.message}")
       # don't do ANYTHING
     end
 
     if user
+      Rails.logger.info("[SECURITY] Successful login for user #{user.id} (#{user.email}) from IP #{request.remote_ip}")
       if params[:remember_me]
         cookies.permanent[:auth_token] = user.auth_token
       else
@@ -25,6 +27,7 @@ class SessionsController < ApplicationController
       end
       redirect_to path
     else
+      Rails.logger.warn("[SECURITY] Failed login attempt for email #{params[:email]} from IP #{request.remote_ip}")
       flash[:error] = e.message
       render "sessions/new"
     end
