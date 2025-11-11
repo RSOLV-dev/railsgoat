@@ -1,27 +1,27 @@
 {
   "redTests": [
     {
-      "testName": "XSS via data-icon attribute with script tag",
-      "testCode": "const { JSDOM } = require('jsdom');\n\ntest('should prevent XSS via data-icon attribute', () => {\n  const dom = new JSDOM('<!DOCTYPE html><html><body><span data-icon=\"test\"></span></body></html>');\n  global.document = dom.window.document;\n  global.window = dom.window;\n  \n  const el = document.querySelector('[data-icon]');\n  el.setAttribute('data-icon', '<img src=x onerror=alert(1)>');\n  \n  require('./vulnerable-code.js');\n  \n  expect(el.innerHTML).not.toContain('onerror');\n  expect(el.innerHTML).not.toContain('<img');\n});",
-      "attackVector": "<img src=x onerror=alert(1)>",
+      "testName": "prototype_pollution_via_constructor",
+      "testCode": "const $ = require('jquery');\nconst Timepicker = require('./bootstrap-timepicker');\n\ntest('should prevent prototype pollution via __proto__', () => {\n  const element = $('<input type=\"text\" />');\n  const maliciousOptions = JSON.parse('{\"__proto__\": {\"polluted\": \"true\"}}');\n  \n  element.timepicker(maliciousOptions);\n  \n  expect({}.polluted).toBeUndefined();\n  expect(Object.prototype.polluted).toBeUndefined();\n});",
+      "attackVector": "{\"__proto__\": {\"polluted\": \"true\"}}",
       "expectedBehavior": "should_fail_on_vulnerable_code"
     },
     {
-      "testName": "XSS via className with malicious HTML",
-      "testCode": "const { JSDOM } = require('jsdom');\n\ntest('should prevent XSS via icon className', () => {\n  const dom = new JSDOM('<!DOCTYPE html><html><body><div class=\"icon-home\"></div></body></html>');\n  global.document = dom.window.document;\n  global.window = dom.window;\n  \n  const el = document.querySelector('.icon-home');\n  el.innerHTML = '<script>alert(\"XSS\")</script>Original';\n  \n  require('./vulnerable-code.js');\n  \n  expect(el.innerHTML).not.toContain('<script>');\n  expect(el.innerHTML).not.toContain('alert');\n});",
-      "attackVector": "<script>alert(\"XSS\")</script>",
+      "testName": "prototype_pollution_via_constructor_property",
+      "testCode": "const $ = require('jquery');\nconst Timepicker = require('./bootstrap-timepicker');\n\ntest('should prevent prototype pollution via constructor.prototype', () => {\n  const element = $('<input type=\"text\" />');\n  const maliciousOptions = JSON.parse('{\"constructor\": {\"prototype\": {\"isAdmin\": true}}}');\n  \n  element.timepicker(maliciousOptions);\n  \n  expect({}.isAdmin).toBeUndefined();\n  expect(Object.prototype.isAdmin).toBeUndefined();\n});",
+      "attackVector": "{\"constructor\": {\"prototype\": {\"isAdmin\": true}}}",
       "expectedBehavior": "should_fail_on_vulnerable_code"
     },
     {
-      "testName": "XSS via innerHTML concatenation with event handler",
-      "testCode": "const { JSDOM } = require('jsdom');\n\ntest('should prevent XSS via innerHTML concatenation', () => {\n  const dom = new JSDOM('<!DOCTYPE html><html><body><span data-icon=\"&#xe000;\"></span></body></html>');\n  global.document = dom.window.document;\n  global.window = dom.window;\n  \n  const el = document.querySelector('[data-icon]');\n  el.innerHTML = '<img src=x onload=alert(document.cookie)>';\n  \n  require('./vulnerable-code.js');\n  \n  expect(el.innerHTML).not.toContain('onload');\n  expect(el.innerHTML).not.toContain('document.cookie');\n});",
-      "attackVector": "<img src=x onload=alert(document.cookie)>",
+      "testName": "prototype_pollution_via_data_attributes",
+      "testCode": "const $ = require('jquery');\nconst Timepicker = require('./bootstrap-timepicker');\n\ntest('should prevent prototype pollution via data attributes', () => {\n  const element = $('<input type=\"text\" data-__proto__-polluted=\"true\" />');\n  \n  element.timepicker();\n  \n  expect({}.polluted).toBeUndefined();\n  expect(Object.prototype.polluted).toBeUndefined();\n});",
+      "attackVector": "data-__proto__-polluted=\"true\"",
       "expectedBehavior": "should_fail_on_vulnerable_code"
     },
     {
-      "testName": "XSS via SVG with embedded script",
-      "testCode": "const { JSDOM } = require('jsdom');\n\ntest('should prevent XSS via SVG injection', () => {\n  const dom = new JSDOM('<!DOCTYPE html><html><body><div class=\"icon-home\"></div></body></html>');\n  global.document = dom.window.document;\n  global.window = dom.window;\n  \n  const el = document.querySelector('.icon-home');\n  el.innerHTML = '<svg onload=alert(1)><circle/></svg>';\n  \n  require('./vulnerable-code.js');\n  \n  expect(el.innerHTML).not.toContain('onload=alert');\n  expect(el.innerHTML).not.toContain('<svg');\n});",
-      "attackVector": "<svg onload=alert(1)><circle/></svg>",
+      "testName": "prototype_pollution_via_nested_options",
+      "testCode": "const $ = require('jquery');\nconst Timepicker = require('./bootstrap-timepicker');\n\ntest('should prevent prototype pollution via nested options', () => {\n  const element = $('<input type=\"text\" />');\n  const maliciousOptions = {templates: JSON.parse('{\"__proto__\": {\"vulnerable\": \"yes\"}}');};\n  \n  element.timepicker(maliciousOptions);\n  \n  expect({}.vulnerable).toBeUndefined();\n  expect(Object.prototype.vulnerable).toBeUndefined();\n});",
+      "attackVector": "{\"templates\": {\"__proto__\": {\"vulnerable\": \"yes\"}}}",
       "expectedBehavior": "should_fail_on_vulnerable_code"
     }
   ]
