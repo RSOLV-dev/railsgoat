@@ -1,27 +1,33 @@
 {
   "redTests": [
     {
-      "testName": "command injection via semicolon in filename",
-      "testCode": "require 'rails_helper'\n\nRSpec.describe Benefits, type: :model do\n  it 'prevents command injection via semicolon' do\n    file = double('file', original_filename: 'test.txt; touch /tmp/pwned', read: 'data')\n    allow(File).to receive(:open).and_yield(double(write: nil, close: nil))\n    allow(File).to receive(:exist?).and_return(true)\n    expect(File).to receive(:exist?).with('/tmp/pwned').and_return(false)\n    Benefits.save(file, 'true')\n    expect(File.exist?('/tmp/pwned')).to be false\n  end\nend",
-      "attackVector": "test.txt; touch /tmp/pwned",
+      "testName": "XSS via script tag injection in code content",
+      "testCode": "const $ = require('jquery');\nrequire('./vulnerable-code.js');\n\ntest('should allow XSS via script tag in innerHTML', () => {\n  document.body.innerHTML = '<pre id=\"test-pre\"></pre>';\n  const $pre = $('#test-pre');\n  const maliciousCode = '<script>window.xssExecuted=true;</script>';\n  $pre.html(maliciousCode);\n  $pre.snippet('javascript');\n  const html = $pre.parent().html();\n  expect(html).toContain('<script>');\n  expect(html).toContain('xssExecuted');\n});",
+      "attackVector": "<script>window.xssExecuted=true;</script>",
       "expectedBehavior": "should_fail_on_vulnerable_code"
     },
     {
-      "testName": "command injection via backticks in filename",
-      "testCode": "require 'rails_helper'\n\nRSpec.describe Benefits, type: :model do\n  it 'prevents command injection via backticks' do\n    file = double('file', original_filename: 'test`whoami`.txt', read: 'data')\n    allow(File).to receive(:open).and_yield(double(write: nil, close: nil))\n    allow(File).to receive(:exist?).and_return(true)\n    expect { Benefits.save(file, 'true') }.not_to raise_error\n    expect(file.original_filename).not_to match(/root|ubuntu|admin/)\n  end\nend",
-      "attackVector": "test`whoami`.txt",
+      "testName": "XSS via img onerror event handler",
+      "testCode": "const $ = require('jquery');\nrequire('./vulnerable-code.js');\n\ntest('should allow XSS via img onerror', () => {\n  document.body.innerHTML = '<pre id=\"test-pre\"></pre>';\n  const $pre = $('#test-pre');\n  const maliciousCode = '<img src=x onerror=\"alert(1)\">';\n  $pre.html(maliciousCode);\n  $pre.snippet('javascript');\n  const html = $pre.parent().html();\n  expect(html).toContain('onerror');\n  expect(html).toContain('alert');\n});",
+      "attackVector": "<img src=x onerror=\"alert(1)\">",
       "expectedBehavior": "should_fail_on_vulnerable_code"
     },
     {
-      "testName": "command injection via pipe operator in filename",
-      "testCode": "require 'rails_helper'\n\nRSpec.describe Benefits, type: :model do\n  it 'prevents command injection via pipe operator' do\n    file = double('file', original_filename: 'test.txt | cat /etc/passwd', read: 'data')\n    allow(File).to receive(:open).and_yield(double(write: nil, close: nil))\n    allow(File).to receive(:exist?).and_return(true)\n    allow(Benefits).to receive(:system)\n    Benefits.save(file, 'true')\n    expect(Benefits).to have_received(:system).with(/cat \\/etc\\/passwd/).never\n  end\nend",
-      "attackVector": "test.txt | cat /etc/passwd",
+      "testName": "XSS via javascript protocol in anchor tag",
+      "testCode": "const $ = require('jquery');\nrequire('./vulnerable-code.js');\n\ntest('should allow XSS via javascript protocol', () => {\n  document.body.innerHTML = '<pre id=\"test-pre\"></pre>';\n  const $pre = $('#test-pre');\n  const maliciousCode = '<a href=\"javascript:alert(1)\">click</a>';\n  $pre.html(maliciousCode);\n  $pre.snippet('javascript');\n  const html = $pre.parent().html();\n  expect(html).toContain('javascript:');\n  expect(html).toContain('alert');\n});",
+      "attackVector": "<a href=\"javascript:alert(1)\">click</a>",
       "expectedBehavior": "should_fail_on_vulnerable_code"
     },
     {
-      "testName": "command injection via dollar sign command substitution",
-      "testCode": "require 'rails_helper'\n\nRSpec.describe Benefits, type: :model do\n  it 'prevents command injection via dollar sign substitution' do\n    file = double('file', original_filename: 'test$(id).txt', read: 'data')\n    allow(File).to receive(:open).and_yield(double(write: nil, close: nil))\n    allow(File).to receive(:exist?).and_return(true)\n    allow(Benefits).to receive(:system).and_call_original\n    Benefits.save(file, 'true')\n    expect(file.original_filename).to eq('test$(id).txt')\n  end\nend",
-      "attackVector": "test$(id).txt",
+      "testName": "XSS via iframe with malicious src",
+      "testCode": "const $ = require('jquery');\nrequire('./vulnerable-code.js');\n\ntest('should allow XSS via iframe injection', () => {\n  document.body.innerHTML = '<pre id=\"test-pre\"></pre>';\n  const $pre = $('#test-pre');\n  const maliciousCode = '<iframe src=\"javascript:alert(1)\"></iframe>';\n  $pre.html(maliciousCode);\n  $pre.snippet('javascript');\n  const html = $pre.parent().html();\n  expect(html).toContain('<iframe');\n  expect(html).toContain('javascript:');\n});",
+      "attackVector": "<iframe src=\"javascript:alert(1)\"></iframe>",
+      "expectedBehavior": "should_fail_on_vulnerable_code"
+    },
+    {
+      "testName": "XSS via SVG with onload event",
+      "testCode": "const $ = require('jquery');\nrequire('./vulnerable-code.js');\n\ntest('should allow XSS via SVG onload', () => {\n  document.body.innerHTML = '<pre id=\"test-pre\"></pre>';\n  const $pre = $('#test-pre');\n  const maliciousCode = '<svg onload=\"alert(1)\">';\n  $pre.html(maliciousCode);\n  $pre.snippet('javascript');\n  const html = $pre.parent().html();\n  expect(html).toContain('<svg');\n  expect(html).toContain('onload');\n});",
+      "attackVector": "<svg onload=\"alert(1)\">",
       "expectedBehavior": "should_fail_on_vulnerable_code"
     }
   ]
