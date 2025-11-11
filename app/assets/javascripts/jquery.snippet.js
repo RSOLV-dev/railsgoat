@@ -734,8 +734,10 @@ ZeroClipboard.Client.prototype = {
 					func[0][ func[1] ](this, args);
 				}
 				else if (typeof(func) == 'string') {
-					// name of function
-					window[func](this, args);
+					// name of function - validate it exists and is a function to prevent code injection
+					if (typeof window[func] === 'function') {
+						window[func](this, args);
+					}
 				}
 			} // foreach event handler defined
 		} // user defined handler for event
