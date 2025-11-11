@@ -72,8 +72,11 @@
         if (hasOptions) {
             if(typeof options.locale == 'object') {
                 $.each(localeObject, function (property, value) {
-                    // Prevent prototype pollution
-                    if (property !== '__proto__' && property !== 'constructor' && property !== 'prototype' && options.locale.hasOwnProperty(property)) {
+                    // Prevent prototype pollution by filtering dangerous keys
+                    if (options.locale.hasOwnProperty(property) &&
+                        property !== '__proto__' &&
+                        property !== 'constructor' &&
+                        property !== 'prototype') {
                         localeObject[property] = options.locale[property] || value;
                     }
                 });

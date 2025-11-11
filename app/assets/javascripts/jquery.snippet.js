@@ -557,7 +557,13 @@ ZeroClipboard.Client.prototype = {
 		
 		if (typeof(stylesToAdd) == 'object') {
 			for (addedStyle in stylesToAdd) {
-				style[addedStyle] = stylesToAdd[addedStyle];
+				// Prevent prototype pollution by filtering dangerous keys
+				if (stylesToAdd.hasOwnProperty(addedStyle) &&
+				    addedStyle !== '__proto__' &&
+				    addedStyle !== 'constructor' &&
+				    addedStyle !== 'prototype') {
+					style[addedStyle] = stylesToAdd[addedStyle];
+				}
 			}
 		}
 		
