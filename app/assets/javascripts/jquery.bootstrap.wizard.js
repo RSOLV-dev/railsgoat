@@ -189,7 +189,7 @@ var bootstrapWizardCreate = function(element, options) {
 $.fn.bootstrapWizard = function(options) {
 	//expose methods
 	if (typeof options == 'string') {
-		var args = Array.prototype.slice.call(arguments, 1).toString();
+		var args = Array.prototype.slice.call(arguments, 1).toString().substring(0, 1000);
 		return this.data('bootstrapWizard')[options](args);
 	}
 	return this.each(function(index){
