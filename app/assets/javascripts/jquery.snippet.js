@@ -389,6 +389,17 @@
 
 // snippet new window popup function
 function snippetPopup(content) {
+	 // HTML escape helper function to prevent XSS
+	 function escapeHtml(unsafe) {
+	  if (typeof unsafe !== 'string') return '';
+	  return unsafe
+	   .replace(/&/g, "&amp;")
+	   .replace(/</g, "&lt;")
+	   .replace(/>/g, "&gt;")
+	   .replace(/"/g, "&quot;")
+	   .replace(/'/g, "&#039;");
+	 }
+
 	 top.consoleRef=window.open('','myconsole',
 	  'width=600,height=300'
 	   +',left=50,top=50'
@@ -399,9 +410,9 @@ function snippetPopup(content) {
 	   +',scrollbars=1'
 	   +',resizable=1');
 	 top.consoleRef.document.writeln(
-	  '<html><head><title>Snippet :: Code View :: '+location.href+'</title></head>'
+	  '<html><head><title>Snippet :: Code View :: '+escapeHtml(location.href)+'</title></head>'
 	   +'<body bgcolor=white onLoad="self.focus()">'
-	   +'<pre>'+content+'</pre>'
+	   +'<pre>'+escapeHtml(content)+'</pre>'
 	   +'</body></html>'
 	 );
 	 top.consoleRef.document.close();
