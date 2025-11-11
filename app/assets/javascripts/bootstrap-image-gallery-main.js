@@ -53,15 +53,15 @@ $(function () {
     });
 
     // Load images via flickr for demonstration purposes:
+    // To use this feature, configure FLICKR_API_KEY in your environment variables
+    // and retrieve it via a server-side endpoint to avoid exposing the key
     // $.ajax({
-    //     url: 'http://api.flickr.com/services/rest/',
+    //     url: '/api/flickr-proxy',  // Server-side proxy endpoint
     //     data: {
     //         format: 'json',
-    //         method: 'flickr.interestingness.getList',
-    //         api_key: '7617adae70159d09ba78cfec73c13be3'
+    //         method: 'flickr.interestingness.getList'
     //     },
-	   //  dataType: 'jsonp',
-    //     jsonp: 'jsoncallback'
+	   //  dataType: 'json'
     // }).done(function (data) {
     //     var gallery = $('#gallery'),
     //         url;
