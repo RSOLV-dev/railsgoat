@@ -53,12 +53,14 @@ $(function () {
     });
 
     // Load images via flickr for demonstration purposes:
+    // To use this feature, obtain a Flickr API key and set it in your environment configuration
+    // Do not hardcode API keys in source code
     // $.ajax({
     //     url: 'http://api.flickr.com/services/rest/',
     //     data: {
     //         format: 'json',
     //         method: 'flickr.interestingness.getList',
-    //         api_key: '7617adae70159d09ba78cfec73c13be3'
+    //         api_key: window.FLICKR_API_KEY || 'YOUR_API_KEY_HERE'
     //     },
 	   //  dataType: 'jsonp',
     //     jsonp: 'jsoncallback'
