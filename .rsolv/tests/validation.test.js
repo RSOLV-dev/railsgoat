@@ -1,21 +1,33 @@
 {
   "redTests": [
     {
-      "testName": "detect hardcoded API key in source code",
-      "testCode": "const fs = require('fs');\nconst path = require('path');\n\ntest('should not contain hardcoded API keys', () => {\n  const filePath = path.join(__dirname, '../demo.js');\n  const fileContent = fs.readFileSync(filePath, 'utf8');\n  const apiKeyPattern = /api_key\\s*:\\s*['\"]([a-f0-9]{32})['\"]|api_key\\s*=\\s*['\"]([a-f0-9]{32})['\"]/gi;\n  const matches = fileContent.match(apiKeyPattern);\n  expect(matches).toBeNull();\n});",
-      "attackVector": "7617adae70159d09ba78cfec73c13be3",
+      "testName": "XSS via script tag injection in data-icon attribute",
+      "testCode": "const { JSDOM } = require('jsdom');\n\ntest('should prevent XSS via script tag in data-icon', () => {\n  const dom = new JSDOM(`<div data-icon=\"<script>window.xssExecuted=true</script>\"></div>`);\n  global.window = dom.window;\n  global.document = dom.window.document;\n  \n  require('./vulnerable-code.js');\n  window.onload();\n  \n  expect(dom.window.xssExecuted).toBeUndefined();\n  expect(document.querySelector('script')).toBeNull();\n});",
+      "attackVector": "<script>window.xssExecuted=true</script>",
       "expectedBehavior": "should_fail_on_vulnerable_code"
     },
     {
-      "testName": "verify API key is loaded from environment variable",
-      "testCode": "test('should use environment variable for API key', () => {\n  const fs = require('fs');\n  const path = require('path');\n  const filePath = path.join(__dirname, '../demo.js');\n  const fileContent = fs.readFileSync(filePath, 'utf8');\n  const envVarPattern = /process\\.env\\.[A-Z_]+|process\\.env\\[['\"][A-Z_]+['\"]]|getenv\\(/i;\n  const hasHardcodedKey = /api_key\\s*:\\s*['\"][a-f0-9]{32}['\"]/i.test(fileContent);\n  const usesEnvVar = envVarPattern.test(fileContent);\n  expect(hasHardcodedKey || usesEnvVar).toBe(true);\n  expect(hasHardcodedKey).toBe(false);\n});",
-      "attackVector": "hardcoded_flickr_api_key",
+      "testName": "XSS via img onerror event handler",
+      "testCode": "const { JSDOM } = require('jsdom');\n\ntest('should prevent XSS via img onerror', () => {\n  const dom = new JSDOM(`<div data-icon='<img src=x onerror=\"window.xssTriggered=true\">'></div>`);\n  global.window = dom.window;\n  global.document = dom.window.document;\n  \n  require('./vulnerable-code.js');\n  window.onload();\n  \n  expect(dom.window.xssTriggered).toBeUndefined();\n});",
+      "attackVector": "<img src=x onerror=\"window.xssTriggered=true\">",
       "expectedBehavior": "should_fail_on_vulnerable_code"
     },
     {
-      "testName": "ensure no sensitive credentials in commented code",
-      "testCode": "test('should not expose API keys even in comments', () => {\n  const fs = require('fs');\n  const path = require('path');\n  const filePath = path.join(__dirname, '../demo.js');\n  const fileContent = fs.readFileSync(filePath, 'utf8');\n  const secretPattern = /['\"]?[a-f0-9]{32}['\"]?/g;\n  const apiKeyContext = /api_key.*[a-f0-9]{32}/i;\n  const hasExposedKey = apiKeyContext.test(fileContent);\n  expect(hasExposedKey).toBe(false);\n});",
-      "attackVector": "exposed_api_key_in_comments",
+      "testName": "XSS via iframe injection",
+      "testCode": "const { JSDOM } = require('jsdom');\n\ntest('should prevent XSS via iframe injection', () => {\n  const dom = new JSDOM(`<div data-icon='<iframe src=\"javascript:alert(1)\"></iframe>'></div>`);\n  global.window = dom.window;\n  global.document = dom.window.document;\n  \n  require('./vulnerable-code.js');\n  window.onload();\n  \n  expect(document.querySelector('iframe')).toBeNull();\n});",
+      "attackVector": "<iframe src=\"javascript:alert(1)\"></iframe>",
+      "expectedBehavior": "should_fail_on_vulnerable_code"
+    },
+    {
+      "testName": "XSS via event handler in HTML attribute",
+      "testCode": "const { JSDOM } = require('jsdom');\n\ntest('should prevent XSS via onclick handler', () => {\n  const dom = new JSDOM(`<div data-icon='<div onclick=\"window.clickXSS=true\">click</div>'></div>`);\n  global.window = dom.window;\n  global.document = dom.window.document;\n  \n  require('./vulnerable-code.js');\n  window.onload();\n  \n  const injectedDiv = document.querySelector('[onclick]');\n  expect(injectedDiv).toBeNull();\n});",
+      "attackVector": "<div onclick=\"window.clickXSS=true\">click</div>",
+      "expectedBehavior": "should_fail_on_vulnerable_code"
+    },
+    {
+      "testName": "XSS via SVG with embedded script",
+      "testCode": "const { JSDOM } = require('jsdom');\n\ntest('should prevent XSS via SVG script', () => {\n  const dom = new JSDOM(`<div data-icon='<svg><script>window.svgXSS=true</script></svg>'></div>`);\n  global.window = dom.window;\n  global.document = dom.window.document;\n  \n  require('./vulnerable-code.js');\n  window.onload();\n  \n  expect(dom.window.svgXSS).toBeUndefined();\n  expect(document.querySelector('svg script')).toBeNull();\n});",
+      "attackVector": "<svg><script>window.svgXSS=true</script></svg>",
       "expectedBehavior": "should_fail_on_vulnerable_code"
     }
   ]
