@@ -10,9 +10,21 @@
  */
 
 (function($) {
-	
+
 	//enables console.log() in all browsers for error messages
-	window.log=function(){log.history=log.history||[];log.history.push(arguments);if(this.console){console.log(Array.prototype.slice.call(arguments))}};		  
+	window.log=function(){log.history=log.history||[];log.history.push(arguments);if(this.console){console.log(Array.prototype.slice.call(arguments))}};
+
+	// HTML escape function to prevent XSS
+	function escapeHtml(text) {
+		var map = {
+			'&': '&amp;',
+			'<': '&lt;',
+			'>': '&gt;',
+			'"': '&quot;',
+			"'": '&#039;'
+		};
+		return String(text).replace(/[&<>"']/g, function(m) { return map[m]; });
+	}
 
 	$.fn.snippet = function(language,settings) {
 	
@@ -399,9 +411,9 @@ function snippetPopup(content) {
 	   +',scrollbars=1'
 	   +',resizable=1');
 	 top.consoleRef.document.writeln(
-	  '<html><head><title>Snippet :: Code View :: '+location.href+'</title></head>'
+	  '<html><head><title>Snippet :: Code View :: '+escapeHtml(location.href)+'</title></head>'
 	   +'<body bgcolor=white onLoad="self.focus()">'
-	   +'<pre>'+content+'</pre>'
+	   +'<pre>'+escapeHtml(content)+'</pre>'
 	   +'</body></html>'
 	 );
 	 top.consoleRef.document.close();
@@ -559,18 +571,21 @@ ZeroClipboard.Client.prototype = {
 	getHTML: function(width, height) {
 		// return HTML for movie
 		var html = '';
-		var flashvars = 'id=' + this.id + 
-			'&width=' + width + 
+		// Sanitize width and height to prevent XSS
+		width = escapeHtml(width);
+		height = escapeHtml(height);
+		var flashvars = 'id=' + escapeHtml(this.id) +
+			'&width=' + width +
 			'&height=' + height;
-			
+
 		if (navigator.userAgent.match(/MSIE/)) {
 			// IE gets an OBJECT tag
 			var protocol = location.href.match(/^https/i) ? 'https://' : 'http://';
-			html += '<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="'+protocol+'download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" width="'+width+'" height="'+height+'" id="'+this.movieId+'" align="middle"><param name="allowScriptAccess" value="always" /><param name="allowFullScreen" value="false" /><param name="movie" value="'+ZeroClipboard.moviePath+'" /><param name="loop" value="false" /><param name="menu" value="false" /><param name="quality" value="best" /><param name="bgcolor" value="#ffffff" /><param name="flashvars" value="'+flashvars+'"/><param name="wmode" value="transparent"/></object>';
+			html += '<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="'+protocol+'download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" width="'+width+'" height="'+height+'" id="'+escapeHtml(this.movieId)+'" align="middle"><param name="allowScriptAccess" value="always" /><param name="allowFullScreen" value="false" /><param name="movie" value="'+escapeHtml(ZeroClipboard.moviePath)+'" /><param name="loop" value="false" /><param name="menu" value="false" /><param name="quality" value="best" /><param name="bgcolor" value="#ffffff" /><param name="flashvars" value="'+escapeHtml(flashvars)+'"/><param name="wmode" value="transparent"/></object>';
 		}
 		else {
 			// all other browsers get an EMBED tag
-			html += '<embed id="'+this.movieId+'" src="'+ZeroClipboard.moviePath+'" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="'+width+'" height="'+height+'" name="'+this.movieId+'" align="middle" allowScriptAccess="always" allowFullScreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="'+flashvars+'" wmode="transparent" />';
+			html += '<embed id="'+escapeHtml(this.movieId)+'" src="'+escapeHtml(ZeroClipboard.moviePath)+'" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="'+width+'" height="'+height+'" name="'+escapeHtml(this.movieId)+'" align="middle" allowScriptAccess="always" allowFullScreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="'+escapeHtml(flashvars)+'" wmode="transparent" />';
 		}
 		return html;
 	},
