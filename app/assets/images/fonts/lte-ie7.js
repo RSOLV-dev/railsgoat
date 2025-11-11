@@ -493,7 +493,7 @@ window.onload = function() {
 			addIcon(el, attr);
 		}
 		c = el.className;
-		c = c.match(/icon-[^\s'"]+/);
+		c = c.match(/icon-[^\s'"]+?/);
 		if (c && icons[c[0]]) {
 			addIcon(el, icons[c[0]]);
 		}

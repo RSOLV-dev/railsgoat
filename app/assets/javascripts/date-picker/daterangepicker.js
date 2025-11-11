@@ -246,13 +246,13 @@
             if ($(this.element).is('input[type=text]')) {
                 var val = $(this.element).val();
                 var split = val.split(this.separator);
-                
+
                 if(split.length == 2) {
                     this.startDate = Date.parseExact(split[0], this.format);
                     this.endDate = Date.parseExact(split[1], this.format);
                 }
             }
-        }        
+        }
 
         //event listeners
         this.container.on('mousedown', $.proxy(this.mousedown, this));
