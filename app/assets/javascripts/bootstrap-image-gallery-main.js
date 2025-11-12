@@ -53,12 +53,13 @@ $(function () {
     });
 
     // Load images via flickr for demonstration purposes:
+    // Note: Configure FLICKR_API_KEY as an environment variable or in a secure configuration file
     // $.ajax({
     //     url: 'http://api.flickr.com/services/rest/',
     //     data: {
     //         format: 'json',
     //         method: 'flickr.interestingness.getList',
-    //         api_key: '7617adae70159d09ba78cfec73c13be3'
+    //         api_key: window.FLICKR_API_KEY || '' // Use configuration from secure source
     //     },
 	   //  dataType: 'jsonp',
     //     jsonp: 'jsoncallback'
