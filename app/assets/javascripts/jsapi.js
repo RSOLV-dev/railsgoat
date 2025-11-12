@@ -1,8 +1,8 @@
 if(!window['googleLT_']){window['googleLT_']=(new Date()).getTime();}if (!window['google']) {
-window['google'] = {};
+window['google'] = Object.create(null);
 }
 if (!window['google']['loader']) {
-window['google']['loader'] = {};
+window['google']['loader'] = Object.create(null);
 google.loader.ServiceBase = 'https://www.google.com/uds';
 google.loader.GoogleApisBase = 'https://ajax.googleapis.com/ajax';
 google.loader.ApiKey = 'notsupplied';
