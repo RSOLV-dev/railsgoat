@@ -436,11 +436,11 @@ var ZeroClipboard = {
 		// simple DOM lookup utility function
 		if (typeof(thingy) == 'string') thingy = document.getElementById(thingy);
 		if (!thingy.addClass) {
-			// extend element with a few useful methods
-			thingy.hide = function() { this.style.display = 'none'; };
-			thingy.show = function() { this.style.display = ''; };
-			thingy.addClass = function(name) { this.removeClass(name); this.className += ' ' + name; };
-			thingy.removeClass = function(name) {
+			// extend element with a few useful methods (protected against prototype pollution)
+			Object.defineProperty(thingy, 'hide', {value: function() { this.style.display = 'none'; }, writable: true, enumerable: false, configurable: true});
+			Object.defineProperty(thingy, 'show', {value: function() { this.style.display = ''; }, writable: true, enumerable: false, configurable: true});
+			Object.defineProperty(thingy, 'addClass', {value: function(name) { this.removeClass(name); this.className += ' ' + name; }, writable: true, enumerable: false, configurable: true});
+			Object.defineProperty(thingy, 'removeClass', {value: function(name) {
 				var classes = this.className.split(/\s+/);
 				var idx = -1;
 				for (var k = 0; k < classes.length; k++) {
