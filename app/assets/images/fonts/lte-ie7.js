@@ -1,9 +1,19 @@
 /* Use this script if you need to support IE 7 and IE 6. */
 
 window.onload = function() {
+	function escapeHtml(text) {
+		var map = {
+			'&': '&amp;',
+			'<': '&lt;',
+			'>': '&gt;',
+			'"': '&quot;',
+			"'": '&#039;'
+		};
+		return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+	}
 	function addIcon(el, entity) {
 		var html = el.innerHTML;
-		el.innerHTML = '<span style="font-family: \'icomoon\'">' + entity + '</span>' + html;
+		el.innerHTML = '<span style="font-family: \'icomoon\'">' + escapeHtml(entity) + '</span>' + html;
 	}
 	var icons = {
 			'icon-home' : '&#xe000;',
