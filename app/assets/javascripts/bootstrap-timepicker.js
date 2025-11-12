@@ -35,7 +35,25 @@
      * ================================== */
     var Timepicker = function(element, options) {
         this.$element = $(element);
-        this.options = $.extend({}, $.fn.timepicker.defaults, options, this.$element.data());
+        // Protect against prototype pollution by filtering dangerous keys
+        var safeOptions = {};
+        if (options && typeof options === 'object') {
+            for (var key in options) {
+                if (options.hasOwnProperty(key) && key !== '__proto__' && key !== 'constructor' && key !== 'prototype') {
+                    safeOptions[key] = options[key];
+                }
+            }
+        }
+        var safeData = {};
+        var elementData = this.$element.data();
+        if (elementData && typeof elementData === 'object') {
+            for (var key in elementData) {
+                if (elementData.hasOwnProperty(key) && key !== '__proto__' && key !== 'constructor' && key !== 'prototype') {
+                    safeData[key] = elementData[key];
+                }
+            }
+        }
+        this.options = $.extend({}, $.fn.timepicker.defaults, safeOptions, safeData);
         this.minuteStep = this.options.minuteStep || this.minuteStep;
         this.secondStep = this.options.secondStep || this.secondStep;
         this.showMeridian = this.options.showMeridian || this.showMeridian;
