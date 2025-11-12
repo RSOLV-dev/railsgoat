@@ -34,7 +34,7 @@ class AdminController < ApplicationController
   def update_user
     user = User.find_by_id(params[:admin_id])
     if user
-      user.update(params[:user].reject { |k| k == ("password" || "password_confirmation") })
+      user.update(user_update_params)
       pass = params[:user][:password]
       user.password = pass if !(pass.blank?)
       user.save!
@@ -59,6 +59,11 @@ class AdminController < ApplicationController
   end
 
   private
+
+  def user_update_params
+    # Whitelist only safe parameters to prevent mass assignment vulnerabilities
+    params.require(:user).permit(:email, :first_name, :last_name)
+  end
 
   def custom_fields
     params.require(:field).keys

@@ -71,11 +71,17 @@
 
         if (hasOptions) {
             if(typeof options.locale == 'object') {
+                // Create safe locale object to prevent prototype pollution
+                var safeLocale = Object.create(null);
+                for (var prop in options.locale) {
+                    if (options.locale.hasOwnProperty(prop) && prop !== '__proto__' && prop !== 'constructor' && prop !== 'prototype') {
+                        safeLocale[prop] = options.locale[prop];
+                    }
+                }
                 $.each(localeObject, function (property, value) {
-                    // Protect against prototype pollution
                     if (property !== '__proto__' && property !== 'constructor' && property !== 'prototype' &&
-                        options.locale.hasOwnProperty(property)) {
-                        localeObject[property] = options.locale[property] || value;
+                        safeLocale.hasOwnProperty(property)) {
+                        localeObject[property] = safeLocale[property] || value;
                     }
                 });
             }
