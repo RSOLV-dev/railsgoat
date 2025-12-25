@@ -71,8 +71,18 @@
 
         if (hasOptions) {
             if(typeof options.locale == 'object') {
+                // Create safe locale object to prevent prototype pollution
+                var safeLocale = Object.create(null);
+                for (var prop in options.locale) {
+                    if (options.locale.hasOwnProperty(prop) && prop !== '__proto__' && prop !== 'constructor' && prop !== 'prototype') {
+                        safeLocale[prop] = options.locale[prop];
+                    }
+                }
                 $.each(localeObject, function (property, value) {
-                    localeObject[property] = options.locale[property] || value;
+                    if (property !== '__proto__' && property !== 'constructor' && property !== 'prototype' &&
+                        safeLocale.hasOwnProperty(property)) {
+                        localeObject[property] = safeLocale[property] || value;
+                    }
                 });
             }
 
@@ -698,7 +708,7 @@
                     }
                     
                     var title = 'r' + row + 'c' + col;
-                    html += '<td class="' + cname.replace(/\s+/g,' ').replace(/^\s?(.*?)\s?$/,'$1') + '" title="' + title + '">' + calendar[row][col].getDate() + '</td>';
+                    html += '<td class="' + cname.replace(/\s+/g,' ').replace(/^\s{0,1}(.*?)\s{0,1}$/,'$1') + '" title="' + title + '">' + calendar[row][col].getDate() + '</td>';
                 }
                 html += '</tr>';
             }
